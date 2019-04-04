@@ -3,38 +3,16 @@
 const Homey = require('homey');
 const Device = require('../../lib/device.js')
 
-const capabilityMap = {
-    "dim": {
-        "channel": 3,
-        "key": "LEVEL",
-        "set": {
-            "key": "LEVEL",
-            "channel": 4
-        },
-        "windowcoverings_state": {
-            "channel": 3,
-            "key": "ACTIVITY_STATE",
-            "convert": activivateStateToCoveringState,
-            "set": {
-                "key": "LEVEL",
-                "channel": 4,
-                "convert": convertSetState,
-                "convertKey": convertSetKey
-            }
-        }
-    }
-}
-
-activivateStateToCoveringState = function (value) {
-    if (value === "UP") {
+const activivateStateToCoveringState = function (value) {
+    if (value === 1) {
         return "up"
-    } else if (value === "DOWN") {
+    } else if (value === 2) {
         return "down"
     }
     return "idle"
 }
 
-convertSetKey = function (key, value) {
+const convertSetKey = function (key, value) {
     if (value === "up") {
         return "LEVEL"
     } else if (value === "down") {
@@ -43,13 +21,35 @@ convertSetKey = function (key, value) {
     return "STOP"
 }
 
-convertSetState = function (value) {
+const convertSetState = function (value) {
     if (value === "up") {
-        return "0.0"
-    } else if (value === "down") {
         return "1.0"
+    } else if (value === "down") {
+        return "0.0"
     }
     return true
+}
+
+const capabilityMap = {
+    "dim": {
+        "channel": 3,
+        "key": "LEVEL",
+        "set": {
+            "key": "LEVEL",
+            "channel": 4
+        }
+    },
+    "windowcoverings_state": {
+        "channel": 3,
+        "key": "ACTIVITY_STATE",
+        "convert": activivateStateToCoveringState,
+        "set": {
+            "key": "LEVEL",
+            "channel": 4,
+            "convert": convertSetState,
+            "convertKey": convertSetKey
+        }
+    }
 }
 
 class HomematicDevice extends Device {
